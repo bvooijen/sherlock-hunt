@@ -1357,3 +1357,104 @@ document.getElementById('toggleFinaleBtn').addEventListener('click', async () =>
 </script>
 </body>
 </html>
+  };
+
+  Object.entries(icons).forEach(([id, svg]) => {
+    const el = document.getElementById(id);
+    if (el && svg) el.innerHTML = svg;
+  });
+}
+
+// ===== FINALE =====
+async function checkFinale() {
+  try {
+    const data = await supaFetch('finale', 'GET', null, '?id=eq.1');
+    if (data.length > 0 && data[0].is_unlocked) {
+      // Show finale link/button in the grid
+      const grid = document.getElementById('clueGrid');
+      const finaleCard = document.createElement('div');
+      finaleCard.className = 'clue-card unlocked';
+      finaleCard.innerHTML = `
+        <div class="clue-card-inner">
+          <div class="clue-number" style="color:var(--gold);opacity:0.5;">★</div>
+          <div class="clue-info">
+            <h3>Zaak Gesloten</h3>
+            <p class="clue-sub">De finale onthulling</p>
+          </div>
+          <span class="clue-status unlocked-status">Vrijgegeven</span>
+        </div>`;
+      finaleCard.addEventListener('click', () => showFinale(data[0].content_html));
+      grid.appendChild(finaleCard);
+    }
+  } catch (err) {
+    console.error('Finale check error:', err);
+  }
+}
+
+function showFinale(html) {
+  document.getElementById('finaleContent').innerHTML = html;
+  document.getElementById('finaleOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  document.getElementById('finaleOverlay').addEventListener('click', () => {
+    document.getElementById('finaleOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+  });
+}
+
+// ===== ADMIN PANEL =====
+document.getElementById('adminToggle').addEventListener('click', () => {
+  document.getElementById('dossierContainer').classList.add('hidden');
+  document.getElementById('adminPanel').classList.add('active');
+  renderAdminPanel();
+});
+
+document.getElementById('adminBackBtn').addEventListener('click', () => {
+  document.getElementById('adminPanel').classList.remove('active');
+  document.getElementById('dossierContainer').classList.remove('hidden');
+  loadClues(); // Refresh
+});
+
+function renderAdminPanel() {
+  const list = document.getElementById('adminClueList');
+  list.innerHTML = '';
+
+  cluesData.forEach(clue => {
+    const card = document.createElement('div');
+    card.className = 'admin-clue-card';
+    card.innerHTML = `
+      <div class="admin-clue-header">
+        <h3>Clue ${clue.clue_number}: ${clue.title}</h3>
+        <span>Unlock: ${clue.unlock_date}</span>
+      </div>
+      <textarea class="admin-textarea" id="admin-content-${clue.id}">${clue.content_html}</textarea>
+      <button class="admin-save-btn" onclick="saveClue(${clue.id})">Opslaan</button>
+    `;
+    list.appendChild(card);
+  });
+}
+
+async function saveClue(id) {
+  const textarea = document.getElementById(`admin-content-${id}`);
+  try {
+    await supaFetch('clues', 'PATCH', { content_html: textarea.value }, `?id=eq.${id}`);
+    alert('Clue opgeslagen!');
+  } catch (err) {
+    alert('Fout bij opslaan: ' + err.message);
+  }
+}
+
+// Toggle finale
+document.getElementById('toggleFinaleBtn').addEventListener('click', async () => {
+  try {
+    const data = await supaFetch('finale', 'GET', null, '?id=eq.1');
+    const current = data[0]?.is_unlocked || false;
+    await supaFetch('finale', 'PATCH', { is_unlocked: !current }, '?id=eq.1');
+    alert(`Finale is nu ${!current ? 'ONTGRENDELD' : 'VERGRENDELD'}`);
+  } catch (err) {
+    alert('Fout: ' + err.message);
+  }
+});
+</script>
+</body>
+</html>
