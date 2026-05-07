@@ -1263,7 +1263,7 @@ function renderClue7Icons() {
 // ===== FINALE =====
 async function checkFinale() {
   try {
-    const data = await supaFetch('finale', 'GET', null, '?id=eq.1');
+    const data = await supaFetch('finale', 'GET', null, '?limit=1');
     if (data.length > 0 && data[0].is_unlocked) {
       // Show finale link/button in the grid
       const grid = document.getElementById('clueGrid');
@@ -1323,9 +1323,10 @@ function initAdmin() {
 
   document.getElementById('toggleFinaleBtn').addEventListener('click', async () => {
     try {
-      const data = await supaFetch('finale', 'GET', null, '?id=eq.1');
-      const current = data[0]?.is_unlocked || false;
-      await supaFetch('finale', 'PATCH', { is_unlocked: !current }, '?id=eq.1');
+      const data = await supaFetch('finale', 'GET', null, '?limit=1');
+      const row = data[0];
+      const current = row?.is_unlocked || false;
+      await supaFetch('finale', 'PATCH', { is_unlocked: !current }, `?id=eq.${row.id}`);
       alert(`Finale is nu ${!current ? 'ONTGRENDELD' : 'VERGRENDELD'}`);
     } catch (err) {
       alert('Fout: ' + err.message);
