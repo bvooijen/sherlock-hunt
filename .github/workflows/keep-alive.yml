@@ -1,0 +1,18 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Elke 5 dagen om 08:00 UTC
+    - cron: '0 8 */5 * *'
+  workflow_dispatch: # Handmatig triggeren mogelijk
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            "https://cmqhpsholdtvkovpiwbj.supabase.co/rest/v1/clues?select=id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}"
