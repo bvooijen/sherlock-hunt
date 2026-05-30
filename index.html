@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -523,22 +522,28 @@
   }
 
   .pigpen-char {
-    width: 28px;
-    height: 28px;
+    width: 38px;
+    height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
   }
 
   .pigpen-char svg {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     stroke: var(--ink);
     stroke-width: 2;
     fill: none;
   }
 
-  .pigpen-space { width: 18px; }
+  .pigpen-space { width: 22px; }
+
+  @media (max-width: 600px) {
+    .pigpen-char { width: 34px; height: 34px; }
+    .pigpen-char svg { width: 28px; height: 28px; }
+    .pigpen-space { width: 18px; }
+  }
   
   /* Evidence grid for clue 7 */
   .evidence-grid {
@@ -1127,7 +1132,7 @@ function renderPigpen() {
   const container = document.getElementById('pigpen-puzzle');
   if (!container) return;
 
-  const text = 'DE MOL VERDWIJNT NIET IN DE ZOMER ZOEK HET MOMENT WAAROP DE ZON HET SNELST CAPITULEERT WANNEER ZELFS OUDE STENEN OP WACHT STAAN';
+  const text = 'DE MOL VERDWIJNT IN DE ZOMER MAAR ZAL TERUGKEREN ZOEK HET MOMENT WAAROP DE ZON DOOR OUDE STENEN SCHIJNT OM MEER TE WETEN';
 
   // Pigpen mapping: A-I in grid, J-R in grid with dots, S-V in X, W-Z in X with dots
   const pigpenSVGs = {
